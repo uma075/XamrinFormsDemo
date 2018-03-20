@@ -16,7 +16,7 @@ namespace XamrinFormsDemo.Views
         LoginViewModel lvm;
 		public LoginPage ()
 		{
-            lvm = new LoginViewModel();
+            lvm = new LoginViewModel(Navigation);
             BindingContext = lvm;
             lvm.DisplayValidLoginPrompt += () => DisplayAlert("Success", "Sucessfully Loggedin", "OK");
             lvm.DisplayInvalidLoginPrompt += () => DisplayAlert("Error", "Invalid Login, try again", "OK");

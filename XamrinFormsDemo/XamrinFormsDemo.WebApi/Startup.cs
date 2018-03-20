@@ -24,8 +24,19 @@ namespace XamrinFormsDemo.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-        }
+            // Add cross-origin resource sharing
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin",
+                    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins(
+                            "*")
+                        .AllowAnyHeader().AllowAnyMethod());
+            });
+        }
+       
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -33,7 +44,7 @@ namespace XamrinFormsDemo.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(env.IsDevelopment() ? "AllowAnyOrigin" : "AllowSpecificOrigin");
             app.UseMvc();
         }
     }

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using JanlekhApp.MobileAppService.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using XamrinFormsDemo.Services;
 
 namespace XamrinFormsDemo.ViewModels
 {
-    class LoginViewModel: BaseViewModel
+    class LoginViewModel : BaseViewModel
     {
         public Action DisplayValidLoginPrompt;
         public Action DisplayInvalidLoginPrompt;
@@ -34,14 +36,17 @@ namespace XamrinFormsDemo.ViewModels
             set { SetProperty(ref loginMessage, value); }
         }
 
+        public INavigation Navigation { get; set; }
+
         public Command LoginCommand { get; protected set; }
-        public LoginViewModel()
+        public LoginViewModel(INavigation navigation)
         {
             Title = "Login";
+            this.Navigation = navigation;
             LoginCommand = new Command(ExecuteLoginCommand);
 
         }
-        private void ExecuteLoginCommand()
+        private async void ExecuteLoginCommand()
         {
             if (IsBusy)
                 return;
@@ -51,16 +56,20 @@ namespace XamrinFormsDemo.ViewModels
             try
             {
                 // Call API to login method
-                if(userName=="uma" && password == "uma")
+                if (userName == "uma" && password == "uma")
                 {
-                    DisplayValidLoginPrompt();                  
+                    DisplayValidLoginPrompt();
+                    User user = new LoginService().Login(userName, password);
+                    if (user != null)
+                    {
+                        await  this.Navigation.PushAsync(new Views.HomePage());
+                    }
+                    else
+                    {
+                        DisplayInvalidLoginPrompt();
+                    }
+
                 }
-                else
-                {
-                    DisplayInvalidLoginPrompt();
-                }
-                loginMessage = "Loggged In Successfully.....:)";
-               
             }
             catch (Exception ex)
             {
